@@ -1,6 +1,6 @@
 {
   "name": "@julianfere/react-utility-hooks",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A type safe react hooks library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

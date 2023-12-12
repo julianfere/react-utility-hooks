@@ -1,5 +1,11 @@
 # @fere/react-utility-hooks
 
+## 0.0.6
+
+### Patch Changes
+
+- 9d87c34: Added .npmignore file
+
 ## 0.0.5
 
 ### Patch Changes
