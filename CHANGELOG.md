@@ -1,5 +1,12 @@
 # @fere/react-utility-hooks
 
+## 0.0.5
+
+### Patch Changes
+
+- 8fc8929: fix pipeline
+- f3b9534: fix auth
+
 ## 0.0.4
 
 ### Patch Changes
