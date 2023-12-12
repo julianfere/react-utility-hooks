@@ -1,5 +1,13 @@
 # @fere/react-utility-hooks
 
+## 0.0.4
+
+### Patch Changes
+
+- 563f392: Adds npmrc to publish script
+- 810c943: fix env
+- e23c3c1: adds env
+
 ## 0.0.3
 
 ### Patch Changes
