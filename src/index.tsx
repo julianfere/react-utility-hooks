@@ -1,1 +1,3 @@
-export const hello = () => console.log('Hello World')
+import useAsync from "./useAsync";
+
+export { useAsync };
