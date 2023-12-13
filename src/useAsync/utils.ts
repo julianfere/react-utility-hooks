@@ -1,9 +1,7 @@
 import { UseAsyncOptions } from "./types";
 
 export const getRunner =
-  <F extends (...args: any[]) => any>(
-    runner: (...args: any[]) => Promise<void>
-  ) =>
+  <F extends (...args: any[]) => any>(runner: (...args: any[]) => void) =>
   <Fn extends F>(_fn: Fn) =>
   (...args: Parameters<Fn>) => {
     runner(...args);
