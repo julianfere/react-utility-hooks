@@ -1,5 +1,11 @@
 # @fere/react-utility-hooks
 
+## 0.1.0
+
+### Minor Changes
+
+- d7c232a: Adds useAsync hook
+
 ## 0.0.6
 
 ### Patch Changes
