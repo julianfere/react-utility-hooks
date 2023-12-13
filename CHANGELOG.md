@@ -1,5 +1,11 @@
 # @fere/react-utility-hooks
 
+## 0.1.1
+
+### Patch Changes
+
+- 6ce7742: Fix readme format
+
 ## 0.1.0
 
 ### Minor Changes
