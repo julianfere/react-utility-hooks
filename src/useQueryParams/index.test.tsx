@@ -1,4 +1,4 @@
-import { describe, expect, it, expectTypeOf, afterEach } from "vitest";
+import { describe, expect, it, expectTypeOf, afterEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 
 import useQueryParams from ".";
@@ -29,87 +29,240 @@ describe("useQueryParams", () => {
     });
   });
 
-  it("should return the correct query params", () => {
-    Object.defineProperty(window, "location", {
-      value: { search: "?foo=hello&baz=test" },
+  describe("get", () => {
+    it("should return the correct query params", () => {
+      Object.defineProperty(window, "location", {
+        value: { search: "?foo=hello&baz=test" },
+      });
+
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      const params = result.current.get("foo", "baz");
+
+      expect(params).toEqual({
+        foo: "hello",
+        baz: "test",
+      });
     });
 
-    const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+    it("should return query params with correspondig type", () => {
+      Object.defineProperty(window, "location", {
+        value: { search: "?foo=hello&bar=1&baz=test" },
+      });
 
-    const params = result.current.get("foo", "baz");
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
 
-    expect(params).toEqual({
-      foo: "hello",
-      baz: "test",
+      const params = result.current.get("foo", "bar", "baz");
+
+      expect(params).toEqual({
+        foo: "hello",
+        bar: 1,
+        baz: "test",
+      });
+
+      expectTypeOf(params).toEqualTypeOf<Partial<TestQueryParams>>();
+    });
+
+    it("should return empty object if no query params are found", () => {
+      Object.defineProperty(window, "location", {
+        value: { search: "" },
+      });
+
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      const params = result.current.get("foo", "bar", "baz");
+
+      expect(params).toEqual({});
+    });
+
+    it("should return the correct query params when the value is an object", () => {
+      Object.defineProperty(window, "location", {
+        value: { search: '?foo={"bar":"test","baz":1}' },
+      });
+
+      const { result } = renderHook(() =>
+        useQueryParams<TestQueryParamsWithObject>()
+      );
+
+      const params = result.current.get("foo");
+
+      expect(params).toEqual({
+        foo: {
+          bar: "test",
+          baz: 1,
+        },
+      });
+
+      expectTypeOf(params).toEqualTypeOf<Partial<TestQueryParamsWithObject>>();
+    });
+
+    it("should return the correct query params when the value is an array", () => {
+      Object.defineProperty(window, "location", {
+        value: { search: "?foo=[1,2,3]" },
+      });
+
+      const { result } = renderHook(() =>
+        useQueryParams<TestQueryParamsWithArray>()
+      );
+
+      const params = result.current.get("foo");
+
+      expect(params).toEqual({
+        foo: [1, 2, 3],
+      });
+
+      expectTypeOf(params).toEqualTypeOf<Partial<TestQueryParamsWithArray>>();
     });
   });
 
-  it("should return query params with correspondig type", () => {
-    Object.defineProperty(window, "location", {
-      value: { search: "?foo=hello&bar=1&baz=test" },
+  describe("set", () => {
+    it("should set the correct query params", () => {
+      const mockReplaceState = vi.fn();
+
+      Object.defineProperties(window, {
+        location: {
+          value: { href: "http://test.com" },
+        },
+        history: {
+          value: {
+            replaceState: mockReplaceState,
+          },
+        },
+      });
+
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      result.current.set({
+        foo: "hello",
+        bar: 1,
+        baz: "test",
+      });
+
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        {},
+        "",
+        "http://test.com?foo=hello&bar=1&baz=test"
+      );
     });
 
-    const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+    it("should set the correct query params when the url is provided", () => {
+      const mockReplaceState = vi.fn();
 
-    const params = result.current.get("foo", "bar", "baz");
+      Object.defineProperties(window, {
+        location: {
+          value: { href: "http://test.com" },
+        },
+        history: {
+          value: {
+            replaceState: mockReplaceState,
+          },
+        },
+      });
 
-    expect(params).toEqual({
-      foo: "hello",
-      bar: 1,
-      baz: "test",
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      result.current.set(
+        {
+          foo: "hello",
+          bar: 1,
+          baz: "test",
+        },
+        "http://anothertest.com"
+      );
+
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        {},
+        "",
+        "http://anothertest.com?foo=hello&bar=1&baz=test"
+      );
     });
 
-    expectTypeOf(params).toEqualTypeOf<Partial<TestQueryParams>>();
-  });
+    it("should set the correct query params when the url has existing query params", () => {
+      const mockReplaceState = vi.fn();
 
-  it("should return empty object if no query params are found", () => {
-    Object.defineProperty(window, "location", {
-      value: { search: "" },
+      Object.defineProperties(window, {
+        location: {
+          value: { href: "http://test.com?foo=hello" },
+        },
+        history: {
+          value: {
+            replaceState: mockReplaceState,
+          },
+        },
+      });
+
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      result.current.set({
+        foo: "hello",
+        bar: 1,
+        baz: "test",
+      });
+
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        {},
+        "",
+        "http://test.com?foo=hello&bar=1&baz=test"
+      );
     });
 
-    const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+    it("should set the correct query params when the url has existing query params and the url is provided", () => {
+      const mockReplaceState = vi.fn();
 
-    const params = result.current.get("foo", "bar", "baz");
+      Object.defineProperties(window, {
+        location: {
+          value: { href: "http://test.com?foo=hello" },
+        },
+        history: {
+          value: {
+            replaceState: mockReplaceState,
+          },
+        },
+      });
 
-    expect(params).toEqual({});
-  });
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
 
-  it("should return the correct query params when the value is an object", () => {
-    Object.defineProperty(window, "location", {
-      value: { search: '?foo={"bar":"test","baz":1}' },
+      result.current.set(
+        {
+          foo: "hello",
+          bar: 1,
+          baz: "test",
+        },
+        "http://anothertest.com"
+      );
+
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        {},
+        "",
+        "http://anothertest.com?foo=hello&bar=1&baz=test"
+      );
     });
 
-    const { result } = renderHook(() =>
-      useQueryParams<TestQueryParamsWithObject>()
-    );
+    it("should be typed correctly", () => {
+      const mockReplaceState = vi.fn();
 
-    const params = result.current.get("foo");
+      Object.defineProperties(window, {
+        location: {
+          value: { href: "http://test.com?foo=hello" },
+        },
+        history: {
+          value: {
+            replaceState: mockReplaceState,
+          },
+        },
+      });
 
-    expect(params).toEqual({
-      foo: {
-        bar: "test",
-        baz: 1,
-      },
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      result.current.set({
+        foo: "hello",
+        bar: 1,
+        baz: "test",
+      });
+
+      expectTypeOf(result.current.set).parameter(0).toEqualTypeOf<
+        Partial<TestQueryParams>
+      >();
     });
-
-    expectTypeOf(params).toEqualTypeOf<Partial<TestQueryParamsWithObject>>();
-  });
-
-  it("should return the correct query params when the value is an array", () => {
-    Object.defineProperty(window, "location", {
-      value: { search: "?foo=[1,2,3]" },
-    });
-
-    const { result } = renderHook(() =>
-      useQueryParams<TestQueryParamsWithArray>()
-    );
-
-    const params = result.current.get("foo");
-
-    expect(params).toEqual({
-      foo: [1, 2, 3],
-    });
-
-    expectTypeOf(params).toEqualTypeOf<Partial<TestQueryParamsWithArray>>();
   });
 });

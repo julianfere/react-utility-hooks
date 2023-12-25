@@ -8,6 +8,7 @@ import { castValue } from "./utils";
  */
 const useQueryParams = <T extends Record<string, any>>(): {
   get: (...keys: (keyof T)[]) => Partial<T>;
+  set: (params: Partial<T>, url?: string) => void;
 } => {
   /**
    * Retrieves specified query parameters from the URL.
@@ -33,7 +34,29 @@ const useQueryParams = <T extends Record<string, any>>(): {
     return params;
   }
 
-  return { get };
+  /**
+   * Sets specified query parameters in the URL.
+   *
+   * @param {Partial<T>} params - The query parameters to set.
+   * @param {string} [url] - The URL to set the query parameters in. Defaults to the current URL.
+   */
+  function set<T extends Record<string, any>>(
+    params: Partial<T>,
+    url?: string
+  ) {
+    const searchParams = new URLSearchParams();
+    const redirectUrl = url || window.location.href;
+
+    Object.entries(params).forEach(([key, value]) => {
+      searchParams.set(key, value.toString());
+    });
+
+    const newURL = `${redirectUrl.split("?")[0]}?${searchParams.toString()}`;
+
+    window.history.replaceState({}, "", newURL);
+  }
+
+  return { get, set };
 };
 
 export default useQueryParams;
