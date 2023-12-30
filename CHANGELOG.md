@@ -1,5 +1,11 @@
 # @fere/react-utility-hooks
 
+## 0.2.0
+
+### Minor Changes
+
+- 43a9018: adds useQueryParams hook
+
 ## 0.1.1
 
 ### Patch Changes
