@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { castValue } from "./utils";
 
 /**
@@ -9,7 +10,10 @@ import { castValue } from "./utils";
 const useQueryParams = <T extends Record<string, any>>(): {
   get: (...keys: (keyof T)[]) => Partial<T>;
   set: (params: Partial<T>, url?: string) => void;
+  build: (params: Partial<T>) => string;
 } => {
+  const [_, setHistory] = useState<string[]>([]); //for re-rendering
+
   /**
    * Retrieves specified query parameters from the URL.
    *
@@ -35,28 +39,38 @@ const useQueryParams = <T extends Record<string, any>>(): {
   }
 
   /**
-   * Sets specified query parameters in the URL.
+   * Builds a query string from the specified query parameters.
    *
-   * @param {Partial<T>} params - The query parameters to set.
-   * @param {string} [url] - The URL to set the query parameters in. Defaults to the current URL.
+   * @param {Partial<T>} params - The query parameters to build a query string from.
+   * @returns {string} The built query string.
    */
-  function set<T extends Record<string, any>>(
-    params: Partial<T>,
-    url?: string
-  ) {
+  function build(params: Partial<T>) {
     const searchParams = new URLSearchParams();
-    const redirectUrl = url || window.location.href;
 
     Object.entries(params).forEach(([key, value]) => {
       searchParams.set(key, value.toString());
     });
 
-    const newURL = `${redirectUrl.split("?")[0]}?${searchParams.toString()}`;
-
-    window.history.replaceState({}, "", newURL);
+    return searchParams.toString();
   }
 
-  return { get, set };
+  /**
+   * Sets specified query parameters in the URL.
+   *
+   * @param {Partial<T>} params - The query parameters to set.
+   * @param {string} [url] - The URL to set the query parameters in. Defaults to the current URL.
+   */
+  function set(params: Partial<T>, url?: string) {
+    const searchParams = build(params);
+    const redirectUrl = url || window.location.href;
+
+    const newURL = `${redirectUrl.split("?")[0]}?${searchParams.toString()}`;
+
+    window.history.pushState({}, "", newURL);
+    setHistory((oldHistory) => [...oldHistory, newURL]);
+  }
+
+  return { get, set, build };
 };
 
 export default useQueryParams;

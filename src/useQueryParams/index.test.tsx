@@ -117,7 +117,7 @@ describe("useQueryParams", () => {
 
   describe("set", () => {
     it("should set the correct query params", () => {
-      const mockReplaceState = vi.fn();
+      const mockpushState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -125,7 +125,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            replaceState: mockReplaceState,
+            pushState: mockpushState,
           },
         },
       });
@@ -138,7 +138,7 @@ describe("useQueryParams", () => {
         baz: "test",
       });
 
-      expect(mockReplaceState).toHaveBeenCalledWith(
+      expect(mockpushState).toHaveBeenCalledWith(
         {},
         "",
         "http://test.com?foo=hello&bar=1&baz=test"
@@ -146,7 +146,7 @@ describe("useQueryParams", () => {
     });
 
     it("should set the correct query params when the url is provided", () => {
-      const mockReplaceState = vi.fn();
+      const mockpushState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -154,7 +154,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            replaceState: mockReplaceState,
+            pushState: mockpushState,
           },
         },
       });
@@ -170,7 +170,7 @@ describe("useQueryParams", () => {
         "http://anothertest.com"
       );
 
-      expect(mockReplaceState).toHaveBeenCalledWith(
+      expect(mockpushState).toHaveBeenCalledWith(
         {},
         "",
         "http://anothertest.com?foo=hello&bar=1&baz=test"
@@ -178,7 +178,7 @@ describe("useQueryParams", () => {
     });
 
     it("should set the correct query params when the url has existing query params", () => {
-      const mockReplaceState = vi.fn();
+      const mockpushState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -186,7 +186,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            replaceState: mockReplaceState,
+            pushState: mockpushState,
           },
         },
       });
@@ -199,7 +199,7 @@ describe("useQueryParams", () => {
         baz: "test",
       });
 
-      expect(mockReplaceState).toHaveBeenCalledWith(
+      expect(mockpushState).toHaveBeenCalledWith(
         {},
         "",
         "http://test.com?foo=hello&bar=1&baz=test"
@@ -207,7 +207,7 @@ describe("useQueryParams", () => {
     });
 
     it("should set the correct query params when the url has existing query params and the url is provided", () => {
-      const mockReplaceState = vi.fn();
+      const mockpushState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -215,7 +215,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            replaceState: mockReplaceState,
+            pushState: mockpushState,
           },
         },
       });
@@ -231,7 +231,7 @@ describe("useQueryParams", () => {
         "http://anothertest.com"
       );
 
-      expect(mockReplaceState).toHaveBeenCalledWith(
+      expect(mockpushState).toHaveBeenCalledWith(
         {},
         "",
         "http://anothertest.com?foo=hello&bar=1&baz=test"
@@ -239,7 +239,7 @@ describe("useQueryParams", () => {
     });
 
     it("should be typed correctly", () => {
-      const mockReplaceState = vi.fn();
+      const mockpushState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -247,7 +247,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            replaceState: mockReplaceState,
+            pushState: mockpushState,
           },
         },
       });
@@ -260,9 +260,35 @@ describe("useQueryParams", () => {
         baz: "test",
       });
 
-      expectTypeOf(result.current.set).parameter(0).toEqualTypeOf<
-        Partial<TestQueryParams>
-      >();
+      expectTypeOf(result.current.set)
+        .parameter(0)
+        .toEqualTypeOf<Partial<TestQueryParams>>();
+    });
+  });
+
+  describe("build", () => {
+    it("should build the correct query params", () => {
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      const params = result.current.build({
+        foo: "hello",
+        bar: 1,
+        baz: "test",
+      });
+
+      expect(params).toEqual("foo=hello&bar=1&baz=test");
+    });
+
+    it("should be typed correctly", () => {
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      const params = result.current.build({
+        foo: "hello",
+        bar: 1,
+        baz: "test",
+      });
+
+      expectTypeOf(params).toEqualTypeOf<string>();
     });
   });
 });
