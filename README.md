@@ -35,6 +35,7 @@
       <a href="">Hooks</a>
       <ul id="hooks">
         <li class="hook-link">🚀<a href="#useAsync">useAsync</a></li>
+        <li>🔍 <a href="#useQueryParams">useQueryParams</a></li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
@@ -61,6 +62,8 @@ npm i @julianfere/react-utility-hooks
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
 
 <!-- HOOKS -->
 <section id="useAsync" class='hook-container'>
@@ -138,6 +141,72 @@ npm i @julianfere/react-utility-hooks
 `run`: A function that triggers the execution of the asynchronous function. If manual is set to true, this function will throw an error, reminding you to set manual to true.
 `state`: A string representing the current state of the asynchronous operation. Possible values are **idle**, **pending**, **fulfilled**, or **rejected**.
   </section>
+</section>
+
+---
+
+<section id="useQueryParams">
+  <section class="hook-title-container">
+    <h2 id="useAsync" class="hook-title">useQueryParams</h2>
+    <a href="https://codesandbox.io/p/sandbox/demo-useasync-3g4gk4">🔍 Codesandbox demo</a>
+  </section>
+  <h4>Overview</h4>
+  <p>useQueryParams is a custom React hook designed to simplify the management of query parameters in React components. It provides a clean and consistent way to handle query parameters and their associated states.
+  </p>
+  <br/>
+
+  <h4>Example</h4>
+
+  ```typescript
+    type UsersQueryParams = {
+      page: number;
+      limit: number;
+      search: string;
+    };
+
+    const Users = () => {
+      const { get, set } = useQueryParams<UsersQueryParams>();
+
+      const { page, limit, search } = get('page', 'limit','search'); // Get query params from the URL
+
+      const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        set({ ...queryParams, search: event.target.value });
+      };
+
+      const handlePageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        set({ ...queryParams, page: event.target.value });
+      };
+
+      const handleLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        set({ ...queryParams, limit: event.target.value });
+      };
+
+      return (
+        <>
+          <input type="text" value={search} onChange={handleSearch} />
+          <input type="number" value={page} onChange={handlePageChange} />
+          <input type="number" value={limit} onChange={handleLimitChange} />
+        </>
+      );
+    };
+  ```
+
+<h4>API</h4>
+
+```typescript
+const { get, set, build } = useQueryParams<QueryParams>();
+```
+
+`QueryParams`: An interface that defines the query parameters that will be used in the component.
+
+**Returned Values**:
+
+`get`: A function that returns the value of the query parameter. It will return an object with the type corresponding to `Partial<QeryParams>`. And for input parameters, it will accept a list of strings corresponding to the query parameters that you want to retrieve.
+
+`set`: A function that sets the value of the query parameter. It will accept an object with the type corresponding to `Partial<QeryParams>`. (it will cause a re-render)
+
+`build`: A function that returns a string with the query parameters in the URL format. It will accept an object with the type corresponding to `Partial<QeryParams>`.
+
 </section>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
