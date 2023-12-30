@@ -167,7 +167,9 @@ describe("useQueryParams", () => {
           bar: 1,
           baz: "test",
         },
-        "http://anothertest.com"
+        {
+          url: "http://anothertest.com",
+        }
       );
 
       expect(mockpushState).toHaveBeenCalledWith(
@@ -177,12 +179,12 @@ describe("useQueryParams", () => {
       );
     });
 
-    it("should set the correct query params when the url has existing query params", () => {
+    it("should set the correct query params when the url has existing query params and replace is false", () => {
       const mockpushState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
-          value: { href: "http://test.com?foo=hello" },
+          value: { href: "http://test.com?foo=hello", search: "?foo=hello" },
         },
         history: {
           value: {
@@ -194,7 +196,6 @@ describe("useQueryParams", () => {
       const { result } = renderHook(() => useQueryParams<TestQueryParams>());
 
       result.current.set({
-        foo: "hello",
         bar: 1,
         baz: "test",
       });
@@ -203,6 +204,39 @@ describe("useQueryParams", () => {
         {},
         "",
         "http://test.com?foo=hello&bar=1&baz=test"
+      );
+    });
+
+    it("should set the correct query params when the url has existing query params and replace is true", () => {
+      const mockpushState = vi.fn();
+
+      Object.defineProperties(window, {
+        location: {
+          value: { href: "http://test.com?foo=hello", search: "?foo=hello" },
+        },
+        history: {
+          value: {
+            pushState: mockpushState,
+          },
+        },
+      });
+
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      result.current.set(
+        {
+          bar: 1,
+          baz: "test",
+        },
+        {
+          replace: true,
+        }
+      );
+
+      expect(mockpushState).toHaveBeenCalledWith(
+        {},
+        "",
+        "http://test.com?bar=1&baz=test"
       );
     });
 
@@ -228,7 +262,9 @@ describe("useQueryParams", () => {
           bar: 1,
           baz: "test",
         },
-        "http://anothertest.com"
+        {
+          url: "http://anothertest.com",
+        }
       );
 
       expect(mockpushState).toHaveBeenCalledWith(
@@ -263,32 +299,6 @@ describe("useQueryParams", () => {
       expectTypeOf(result.current.set)
         .parameter(0)
         .toEqualTypeOf<Partial<TestQueryParams>>();
-    });
-  });
-
-  describe("build", () => {
-    it("should build the correct query params", () => {
-      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
-
-      const params = result.current.build({
-        foo: "hello",
-        bar: 1,
-        baz: "test",
-      });
-
-      expect(params).toEqual("foo=hello&bar=1&baz=test");
-    });
-
-    it("should be typed correctly", () => {
-      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
-
-      const params = result.current.build({
-        foo: "hello",
-        bar: 1,
-        baz: "test",
-      });
-
-      expectTypeOf(params).toEqualTypeOf<string>();
     });
   });
 });
