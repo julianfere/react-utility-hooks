@@ -34,8 +34,13 @@
     <li>
       <a href="">Hooks</a>
       <ul id="hooks">
-        <li class="hook-link">🚀<a href="#useAsync">useAsync</a></li>
-        <li>🔍 <a href="#useQueryParams">useQueryParams</a></li>
+        <li><a href="#useasync">useAsync</a></li>
+        <li><a href="#usedebounce">useDebounce</a></li>
+        <li><a href="#usethrottle">useThrottle</a></li>
+        <li><a href="#uselocalstorage">useLocalStorage</a></li>
+        <li><a href="#usedelay">useDelay</a></li>
+        <li><a href="#usedocumenttitle">useDocumentTitle</a></li>
+        <li><a href="#usequeryparams">useQueryParams</a></li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
@@ -66,17 +71,11 @@ npm i @julianfere/react-utility-hooks
 ---
 
 <!-- HOOKS -->
-<section id="useAsync" class='hook-container'>
-  <section class="hook-title-container">
-    <h2 id="useAsync" class="hook-title">useAsync</h2>
-    <a href="https://codesandbox.io/p/sandbox/demo-useasync-3g4gk4">🚀 Codesandbox demo</a>
-  </section>
-  <br/>
-  <section class="hook-content">
-    <h4>Overview</h4>
-    <p>useAsync is a custom React hook designed to simplify the management of asynchronous operations in React components. It provides a clean and consistent way to handle asynchronous function calls and their associated states.
-    </p>
-  <br/>
+## useAsync
+
+  <h4>Overview</h4>
+  <p>useAsync is a custom React hook designed to simplify the management of asynchronous operations in React components. It provides a clean and consistent way to handle asynchronous function calls and their associated states.
+  </p>
 
   <h4>Example</h4>
 
@@ -335,6 +334,38 @@ const delayedValue = useDelay(callback, options);
 `run`: A function that triggers the execution of the delayed function. If manual is set to true, this function will throw an error, reminding you to set manual to true.
 
 <p align="right">(<a href="#hooks">back to hooks</a>)</p>
+
+## useDocumentTitle
+
+  <h4>Overview</h4>
+    <p>useDocumentTitle is a custom React hook designed to simplify the management of the document title in React components. It provides a clean and consistent way to handle the document title and its associated states.
+    </p>
+  <br/>
+
+  <h4>Example</h4>
+  
+  ```typescript
+  import {useDocumentTitle} from "@hooks";
+
+  const BasicExample = () => {
+    useDocumentTitle("New Title");
+
+    return (
+      <>
+        <p>Document title has been updated to "New Title"</p>
+      </>
+    );
+  };
+```
+
+  <h4>API</h4>
+
+```typescript
+useDocumentTitle(title, persistOnUnmount);
+```
+
+`title`: The new title for the document.
+`persistOnUnmount`: (Optional) If set to true, the document title will persist after the component unmounts. Defaults to false.
 
 
 <!-- CONTRIBUTING -->
