@@ -1,4 +1,7 @@
 import useAsync from "./useAsync";
-import useQueryParams from "./useQueryParams";
+import useDebounce from "./useDebounce";
+import useThrottle from "./useThrottle";
+import useLocalStorage from "./useLocalStorage";
+import useDelay from "./useDelay";
 
-export { useAsync, useQueryParams };
+export { useAsync, useDebounce, useThrottle, useLocalStorage, useDelay };
