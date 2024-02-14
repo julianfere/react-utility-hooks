@@ -1,5 +1,20 @@
 # @fere/react-utility-hooks
 
+## 1.0.0
+
+### Major Changes
+
+- d168556: Adds multiple utility hooks
+
+### Minor Changes
+
+- d168556: adds useDocumentTitleHook
+- d168556: adds useDebounceHook
+- d168556: adds useThrottle hook
+- d168556: adds refactor useQueryParamsHook
+- d168556: adds useDelay hook
+- d168556: adds useLocalStorage hook
+
 ## 0.2.0
 
 ### Minor Changes
