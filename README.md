@@ -153,7 +153,162 @@ npm i @julianfere/react-utility-hooks
 
   <h4>Example</h4>
   
+  
   ```typescript
+import React, { useState } from "react";
+
+import { useDebounce } from "@hooks";
+
+const BasicExample = () => {
+  const [value, setValue] = useState("");
+  const debouncedValue = useDebounce(value, 500);
+
+  useEffect(() => { makeApiCall(debouncedValue); }, [debouncedValue]);
+
+  return (
+    <>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <p>Debounced value: {debouncedValue}</p>
+    </>
+  );
+};
+  ```
+
+  <h4>API</h4>
+
+```typescript
+
+const debouncedValue = useDebounce(value, delay);
+```
+
+`value`: The value to be debounced.
+`delay`: The delay in milliseconds to wait before updating the debounced value. Defaults to 500ms.
+<p align="right">(<a href="#hooks">back to hooks</a>)</p>
+
+## useThrottle
+
+  <h4>Overview</h4>
+    <p>useThrottle is a custom React hook designed to simplify the management of throttled values in React components. It provides a clean and consistent way to handle throttled values and their associated states.
+    </p>
+  <br/>
+
+  <h4>Example</h4>
+  
+  ```typescript
+import React, { useState } from "react";
+
+import { useThrottle } from "@hooks";
+
+const BasicExample = () => {
+  const [value, setValue] = useState("");
+  const throttledValue = useThrottle(value, 500);
+
+  useEffect(() => { makeApiCall(throttledValue); }, [throttledValue]);
+
+  return (
+    <>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <p>Throttled value: {throttledValue}</p>
+    </>
+  );
+};
+  ```
+
+  <h4>API</h4>
+
+```typescript
+
+const throttledValue = useThrottle(value, delay);
+```
+
+`value`: The value to be throttled.
+`delay`: The delay in milliseconds to wait before updating the throttled value. Defaults to 500ms.
+
+<p align="right">(<a href="#hooks">back to hooks</a>)</p>
+
+
+## useLocalStorage
+
+  <h4>Overview</h4>
+    <p>useLocalStorage is a custom React hook designed to simplify the management of local storage in React components. It provides a clean and consistent way to handle local storage and its associated states.
+    </p>
+  <br/>
+
+  <h4>Example</h4>
+  
+  ```typescript
+  import { useLocalStorage } from "@hooks";
+
+  type UseLocalStorageType = {
+    name: string;
+    age: number;
+  }
+
+  const BasicExample = () => {
+    const { getItem, setItem, removeItem, hasItem, clear } = useLocalStorage<UseLocalStorageType>();
+    const [key, setKey] = useState("");
+    const [value, setValue] = useState("");
+
+    return (
+      <>
+        <input onChange={(e) => setKey(e.value)} />
+        <input onChange={(e) => setValue(e.value)} />
+        <p>{key} is {getItem(key)}</p>
+        <button onClick={() => setItem(key, value)}>Set Item</button>
+        <button onClick={() => removeItem(key)}>Remove Item</button>
+        <button onClick={() => clear()}>Clear</button>
+      </input>
+    );
+  };
+```
+
+  <h4>API</h4>
+
+```typescript
+const { getItem, setItem, removeItem, hasItem, clear } = useLocalStorage<T>();
+```
+
+`T`: The type of the value to be stored in local storage.
+
+**Returned Values**:
+`getItem`: A function that retrieves the value associated with the specified key from local storage.
+`setItem`: A function that stores the specified value in local storage, associated with the specified key.
+`removeItem`: A function that removes the specified key and its associated value from local storage.
+`hasItem`: A function that returns true if the specified key exists in local storage, and false otherwise.
+`clear`: A function that removes all keys and their associated values from local storage.
+
+<p align="right">(<a href="#hooks">back to hooks</a>)</p>
+
+## useDelay
+
+  <h4>Overview</h4>
+    <p>useDelay is a custom React hook designed to simplify the management of delayed values in React components. It provides a clean and consistent way to handle delayed values and their associated states.
+    </p>
+  <br/>
+
+  <h4>Example</h4>
+  
+  ```typescript
+  import {useDelay} from "@hooks";
+
+  const BasicExample = () => {
+    const [value, setValue] = useState("");
+
+    const updateValue = (val: string)=> {
+      setValue(val);
+    }
+
+    useDelay(() => updateValue("Delayed value"));
+
+    const runDelay = useDelay(() => updateValue("Manual value"), {manual: true, delay: 1000});
 import React, { useState } from "react";
 
 import { useDebounce } from "@hooks";
