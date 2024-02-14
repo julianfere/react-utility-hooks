@@ -117,7 +117,7 @@ describe("useQueryParams", () => {
 
   describe("set", () => {
     it("should set the correct query params", () => {
-      const mockpushState = vi.fn();
+      const mockreplaceState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -125,7 +125,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            pushState: mockpushState,
+            replaceState: mockreplaceState,
           },
         },
       });
@@ -138,15 +138,15 @@ describe("useQueryParams", () => {
         baz: "test",
       });
 
-      expect(mockpushState).toHaveBeenCalledWith(
-        {},
+      expect(mockreplaceState).toHaveBeenCalledWith(
+        null,
         "",
         "http://test.com?foo=hello&bar=1&baz=test"
       );
     });
 
     it("should set the correct query params when the url is provided", () => {
-      const mockpushState = vi.fn();
+      const mockreplaceState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -154,7 +154,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            pushState: mockpushState,
+            replaceState: mockreplaceState,
           },
         },
       });
@@ -170,15 +170,15 @@ describe("useQueryParams", () => {
         "http://anothertest.com"
       );
 
-      expect(mockpushState).toHaveBeenCalledWith(
-        {},
+      expect(mockreplaceState).toHaveBeenCalledWith(
+        null,
         "",
         "http://anothertest.com?foo=hello&bar=1&baz=test"
       );
     });
 
     it("should set the correct query params when the url has existing query params", () => {
-      const mockpushState = vi.fn();
+      const mockreplaceState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -186,7 +186,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            pushState: mockpushState,
+            replaceState: mockreplaceState,
           },
         },
       });
@@ -199,15 +199,15 @@ describe("useQueryParams", () => {
         baz: "test",
       });
 
-      expect(mockpushState).toHaveBeenCalledWith(
-        {},
+      expect(mockreplaceState).toHaveBeenCalledWith(
+        null,
         "",
         "http://test.com?foo=hello&bar=1&baz=test"
       );
     });
 
     it("should set the correct query params when the url has existing query params and the url is provided", () => {
-      const mockpushState = vi.fn();
+      const mockreplaceState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -215,7 +215,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            pushState: mockpushState,
+            replaceState: mockreplaceState,
           },
         },
       });
@@ -231,15 +231,15 @@ describe("useQueryParams", () => {
         "http://anothertest.com"
       );
 
-      expect(mockpushState).toHaveBeenCalledWith(
-        {},
+      expect(mockreplaceState).toHaveBeenCalledWith(
+        null,
         "",
         "http://anothertest.com?foo=hello&bar=1&baz=test"
       );
     });
 
     it("should be typed correctly", () => {
-      const mockpushState = vi.fn();
+      const mockreplaceState = vi.fn();
 
       Object.defineProperties(window, {
         location: {
@@ -247,7 +247,7 @@ describe("useQueryParams", () => {
         },
         history: {
           value: {
-            pushState: mockpushState,
+            replaceState: mockreplaceState,
           },
         },
       });
@@ -289,6 +289,36 @@ describe("useQueryParams", () => {
       });
 
       expectTypeOf(params).toEqualTypeOf<string>();
+    });
+  });
+
+  describe("clear", () => {
+    it("should clear the query params", () => {
+      const mockreplaceState = vi.fn();
+
+      Object.defineProperties(window, {
+        location: {
+          value: {
+            href: "http://test.com?foo=hello",
+            pathname: "http://test.com",
+          },
+        },
+        history: {
+          value: {
+            replaceState: mockreplaceState,
+          },
+        },
+      });
+
+      const { result } = renderHook(() => useQueryParams<TestQueryParams>());
+
+      result.current.clear();
+
+      expect(mockreplaceState).toHaveBeenCalledWith(
+        null,
+        "",
+        "http://test.com"
+      );
     });
   });
 });

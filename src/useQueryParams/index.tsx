@@ -1,29 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { castValue } from "./utils";
 
-/**
- * A React hook for accessing query parameters and setting them in the URL.
- *
- * @template T - The type of the query parameters object.
- * @returns {{ get: (...keys: (keyof T)[]) => Partial<T> }} An object with a `get` function for retrieving query parameters.
- */
-const useQueryParams = <T extends Record<string, any>>(): {
-  get: (...keys: (keyof T)[]) => Partial<T>;
-  set: (params: Partial<T>, url?: string) => void;
-  build: (params: Partial<T>) => string;
-} => {
-  const [_, setHistory] = useState<string[]>([]); //for re-rendering
+function getCurrentLocation() {
+  return {
+    pathname: window.location.pathname,
+    search: window.location.search,
+  };
+}
 
-  /**
-   * Retrieves specified query parameters from the URL.
-   *
-   * @param {...(keyof T)[]} keys - The keys of the query parameters to retrieve.
-   * @returns {Partial<T>} An object containing the retrieved query parameters.
-   */
-  function get(...keys: (keyof T)[]): Partial<T> {
+const listeners: (() => void)[] = [];
+
+const useQueryParams = <TQuery extends Record<string, any>>() => {
+  const [{ pathname, search }, setLocation] = useState(getCurrentLocation());
+
+  const notify = () => listeners.forEach((listener) => listener());
+  const handleChange = () => setLocation(getCurrentLocation());
+
+  useEffect(() => {
+    listeners.push(handleChange);
+    window.addEventListener("popstate", handleChange);
+
+    return () => {
+      listeners.splice(listeners.indexOf(handleChange), 1);
+      window.removeEventListener("popstate", handleChange);
+    };
+  }, []);
+
+  const replace = (url: string) => {
+    window.history.replaceState(null, "", url);
+    notify();
+  };
+
+  const get = (...keys: (keyof TQuery)[]) => {
     const location = window.location;
 
-    const params: Partial<T> = {};
+    const params: Partial<TQuery> = {};
 
     const searchParams = new URLSearchParams(location.search);
 
@@ -31,20 +42,14 @@ const useQueryParams = <T extends Record<string, any>>(): {
       const value = searchParams.get(key.toString());
 
       if (value) {
-        params[key as keyof T] = castValue<T[keyof T]>(value);
+        params[key as keyof TQuery] = castValue<TQuery[keyof TQuery]>(value);
       }
     });
 
     return params;
-  }
+  };
 
-  /**
-   * Builds a query string from the specified query parameters.
-   *
-   * @param {Partial<T>} params - The query parameters to build a query string from.
-   * @returns {string} The built query string.
-   */
-  function build(params: Partial<T>) {
+  const build = (params: Partial<TQuery>) => {
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
@@ -52,25 +57,24 @@ const useQueryParams = <T extends Record<string, any>>(): {
     });
 
     return searchParams.toString();
-  }
+  };
 
-  /**
-   * Sets specified query parameters in the URL.
-   *
-   * @param {Partial<T>} params - The query parameters to set.
-   * @param {string} [url] - The URL to set the query parameters in. Defaults to the current URL.
-   */
-  function set(params: Partial<T>, url?: string) {
+  const set = (params: Partial<TQuery>, url?: string) => {
     const searchParams = build(params);
     const redirectUrl = url || window.location.href;
 
+    if (searchParams === "") return;
+
     const newURL = `${redirectUrl.split("?")[0]}?${searchParams.toString()}`;
 
-    window.history.pushState({}, "", newURL);
-    setHistory((oldHistory) => [...oldHistory, newURL]);
-  }
+    replace(newURL);
+  };
 
-  return { get, set, build };
+  const clear = () => {
+    replace(pathname);
+  };
+
+  return { get, set, build, pathname, search, clear };
 };
 
 export default useQueryParams;
