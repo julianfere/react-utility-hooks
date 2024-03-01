@@ -74,71 +74,73 @@ npm i @julianfere/react-utility-hooks
 ## useAsync
 
   <h4>Overview</h4>
-  <p>useAsync is a custom React hook designed to simplify the management of asynchronous operations in React components. It provides a clean and consistent way to handle asynchronous function calls and their associated states.
-  </p>
+    <p>useAsync is a custom React hook designed to simplify the management of asynchronous operations in React components. It provides a clean and consistent way to handle asynchronous function calls and their associated states.
+    </p>
+  <br/>
 
   <h4>Example</h4>
 
-  ```typescript
-  import React from "react";
-  import { useAsync } from "@julianfere/react-utility-hooks";
+```typescript
+import React from "react";
+import { useAsync } from "@julianfere/react-utility-hooks";
 
-    const fetchData = async () => {
-      // Your asynchronous operation here
-      // e.g., fetching data from an API
-    };
+  const fetchData = async () => {
+    // Your asynchronous operation here
+    // e.g., fetching data from an API
+  };
 
-    const BasicExampleAutomatic = () => {
-      const { state } = useAsync(() => fetchData());
-
-      return (
-        <>
-          {state === "pending" && <p>Loading...</p> }
-          {state === "fulfilled" && <p>Data loaded successfully!</p>}
-          {state === "rejected" && <p>Error loading data.</p>}
-        </>
-      );
-    };
-
-  const CompleteExampleManua = () => {
-    const [data, setData] = useState(null);
-
-    const { run, state } = useAsync(() => fetchData(), {
-      manual: true,
-      onSuccess: (data) => setData(data),
-      onError: (error) => console.log(error),
-    });
+  const BasicExampleAutomatic = () => {
+    const { state } = useAsync(() => fetchData());
 
     return (
       <>
         {state === "pending" && <p>Loading...</p> }
         {state === "fulfilled" && <p>Data loaded successfully!</p>}
         {state === "rejected" && <p>Error loading data.</p>}
-        <button onClick={run}>Fetch Data</button>
       </>
-    )
-  }
-  ```
+    );
+  };
 
+const CompleteExampleManua = () => {
+  const [data, setData] = useState(null);
+
+  const { run, state } = useAsync(() => fetchData(), {
+    manual: true,
+    onSuccess: (data) => setData(data),
+    onError: (error) => console.log(error),
+  });
+
+  return (
+    <>
+      {state === "pending" && <p>Loading...</p> }
+      {state === "fulfilled" && <p>Data loaded successfully!</p>}
+      {state === "rejected" && <p>Error loading data.</p>}
+      <button onClick={run}>Fetch Data</button>
+    </>
+  )
+}
+```
 
   <h4>API</h4>
 
-  ```typescript 
-  const { run, state } = useAsync(() => asyncFunction(), options)
-  ```
-  
+```typescript
+const { run, state } = useAsync(() => asyncFunction(), options);
+```
+
 `asyncFunction`: The asynchronous function that will be executed.
 `options`: (Optional) Configuration options for the useAsync hook.
 
-**Options**: 
+**Options**:
 
 `manual` (default: false): If set to true, the asynchronous function won't run automatically on component mount. You must call run manually. Otherwise, the asynchronous function will run automatically on component mount.
 `onSuccess`: A callback function that will be executed when the asynchronous function resolves successfully.
 `onError`: A callback function that will be executed when the asynchronous function encounters an error.
+`cancelable`: (default: true) If set to false, the asynchronous function will not be cancelable. If set to true, the asynchronous function will be cancelable. This means that if the component unmounts before the asynchronous function resolves, the asynchronous function will be canceled.
 
 **Returned Values**:
 `run`: A function that triggers the execution of the asynchronous function. If manual is set to true, this function will throw an error, reminding you to set manual to true.
 `state`: A string representing the current state of the asynchronous operation. Possible values are **idle**, **pending**, **fulfilled**, or **rejected**.
+
   </section>
 </section>
 

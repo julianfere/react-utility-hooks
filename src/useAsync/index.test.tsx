@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
+
 import useAsync from ".";
 
 describe("useAsync", () => {
