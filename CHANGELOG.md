@@ -1,5 +1,11 @@
 # @fere/react-utility-hooks
 
+## 1.1.0
+
+### Minor Changes
+
+- 24d9ba4: Improves useAsync hook
+
 ## 1.0.0
 
 ### Major Changes
